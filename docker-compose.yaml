@@ -1,0 +1,54 @@
+version: "3.1"
+services:
+
+  mysql:
+    image: mysql:5.7
+    networks:
+      - calculator-net
+    volumes:
+      - ./db/:/var/lib/mysql
+    environment:
+    #!!unsafe!!
+      - MYSQL_ROOT_PASSWORD=mysql_root_password
+      - MYSQL_DATABASE=calculator
+      - MYSQL_USER=calculator_user
+      - MYSQL_PASSWORD=calculator_user_password
+
+  php:
+    build:
+      context: .
+      dockerfile: dockerfiles/php/Dockerfile
+    ports:
+      - 9000
+    networks:
+      - calculator-net
+    depends_on:
+     - mysql
+    volumes:
+      - ./calculator:/usr/share/nginx/html:cached
+
+  php-composer:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: dockerfiles/php.composer/Dockerfile
+    volumes:
+      - ./calculator:/usr/share/nginx/html:cached
+    tty: true
+
+  nginx:
+    image: nginx:alpine
+    networks:
+      - calculator-net
+    ports:
+      - 8512:80
+    depends_on:
+      - php
+    volumes:
+      - ./config/nginx-vhost.conf:/etc/nginx/conf.d/default.conf
+      - ./calculator/:/usr/share/nginx/html
+      - ./logs/nginx/:/var/log/nginx
+
+networks:
+  calculator-net:
