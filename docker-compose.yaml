@@ -9,12 +9,18 @@ services:
       - ./db/:/var/lib/mysql
     environment:
     #!!unsafe!!
-      - MYSQL_ROOT_PASSWORD=mysql_root_password
-      - MYSQL_DATABASE=calculator
-      - MYSQL_USER=calculator_user
-      - MYSQL_PASSWORD=calculator_user_password
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
   php:
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
     build:
       context: .
       dockerfile: dockerfiles/php/Dockerfile
@@ -38,7 +44,22 @@ services:
       dockerfile: dockerfiles/php.composer/Dockerfile
     volumes:
       - ./calculator:/usr/share/nginx/html:cached
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
+      - ./logs/php/:/var/log/php
     tty: true
+
+  php-migrator:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: dockerfiles/php.migrator/Dockerfile
+    volumes:
+      - ./calculator:/usr/share/nginx/html:cached
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
+      - ./logs/php/:/var/log/php
 
   nginx:
     image: nginx:alpine

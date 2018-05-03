@@ -1,5 +1,6 @@
 .idea
 .docker-sync
+.env
 db
 !db/.gitkeep
 logs
