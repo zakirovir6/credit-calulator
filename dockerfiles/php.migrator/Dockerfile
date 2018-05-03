@@ -19,6 +19,10 @@ RUN docker-php-ext-enable \
 
 RUN apk del .phpize_deps
 
+RUN apk add --no-cache bash
+
 WORKDIR /usr/share/nginx/html
 
-CMD php bin/console doctrine:migrations:migrate -n
+COPY utils/wait-for-it/wait-for-it.sh /wait-for-it.sh
+
+CMD /wait-for-it.sh mysql:3306 --timeout=300 --strict -- php bin/console doctrine:migrations:migrate -n

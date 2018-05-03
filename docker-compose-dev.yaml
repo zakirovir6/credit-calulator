@@ -5,6 +5,8 @@ services:
     image: mysql:5.7
     networks:
       - calculator-net
+    ports:
+      - 3306
     volumes:
       - ./db/:/var/lib/mysql
     environment:
@@ -31,19 +33,27 @@ services:
     depends_on:
      - mysql
     volumes:
-      - calc-dev-sync:/usr/share/nginx/html
+      - calc-dev-sync:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
       - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
       - ./logs/php/:/var/log/php
 
   php-composer:
-    depends_on:
-      - mysql
     build:
       context: .
       dockerfile: dockerfiles/php.composer/Dockerfile
+    networks:
+      - calculator-net
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
     volumes:
-      - ./calculator:/usr/share/nginx/html:cached
+      - calc-dev-sync:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
       - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
       - ./logs/php/:/var/log/php
@@ -61,8 +71,10 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/php.migrator/Dockerfile
+    networks:
+      - calculator-net
     volumes:
-      - ./calculator:/usr/share/nginx/html:cached
+      - calc-dev-sync:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
       - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
       - ./logs/php/:/var/log/php

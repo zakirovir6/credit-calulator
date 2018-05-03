@@ -5,10 +5,11 @@ services:
     image: mysql:5.7
     networks:
       - calculator-net
+    ports:
+      - 3306
     volumes:
       - ./db/:/var/lib/mysql
     environment:
-    #!!unsafe!!
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
@@ -37,11 +38,19 @@ services:
       - ./logs/php/:/var/log/php
 
   php-composer:
-    depends_on:
-      - mysql
     build:
       context: .
       dockerfile: dockerfiles/php.composer/Dockerfile
+    networks:
+      - calculator-net
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
     volumes:
       - ./calculator:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
@@ -50,11 +59,19 @@ services:
     tty: true
 
   php-migrator:
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
     depends_on:
       - mysql
     build:
       context: .
       dockerfile: dockerfiles/php.migrator/Dockerfile
+    networks:
+      - calculator-net
     volumes:
       - ./calculator:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
