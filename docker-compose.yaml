@@ -78,6 +78,13 @@ services:
       - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
       - ./logs/php/:/var/log/php
 
+  yarn-builder:
+    build:
+      context: .
+      dockerfile: dockerfiles/yarn.builder/Dockerfile
+    volumes:
+      - ./calculator:/usr/share/nginx/html
+
   nginx:
     image: nginx:alpine
     networks:

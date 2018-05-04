@@ -3,10 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('build/js/calculator.css') }}">
+        {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+    <body class="bg-light">
+        <div class="container">
+            <div id="app">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+
+        {% block javascripts %}
+            <script src="{{ asset('build/js/calculator.js') }}"></script>
+        {% endblock %}
     </body>
 </html>
