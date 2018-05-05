@@ -3,10 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Calculation;
+use App\Kernel;
 use App\Utils\ScheduleCalculation;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -60,6 +64,15 @@ class CalculationApiController extends Controller
                 'type' => $type
             ];
         }
+
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->addListener(KernelEvents::TERMINATE, function(PostResponseEvent $event) use ($scheduleCalculation, $calculation) {
+            $d = [];
+            foreach ($scheduleCalculation->make($calculation) as $repaymentSchedule) {
+                $d[] = $repaymentSchedule;
+            }
+        });
 
         return $this->json(['error' => '', 'data' => $data]);
     }

@@ -1,0 +1,6 @@
+enqueue:
+  transport:
+      default: 'redis'
+      redis:
+        dsn: "%env(REDIS_DSN)%"
+  client:

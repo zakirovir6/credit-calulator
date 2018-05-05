@@ -15,6 +15,10 @@
         <env name="APP_SECRET" value="s$cretf0rt3st" />
         <env name="SHELL_VERBOSITY" value="-1" />
         <!-- define your env variables for the test env here -->
+
+        <!-- ###+ enqueue/redis ### -->
+        <env name="ENQUEUE_DSN" value="redis:"/>
+        <!-- ###- enqueue/redis ### -->
     </php>
 
     <testsuites>
