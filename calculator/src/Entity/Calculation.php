@@ -5,12 +5,16 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CalculationRepository")
  */
 class Calculation
 {
+    public const TYPE_PAYMENT_ANNUITY = 1;
+    public const TYPE_PAYMENT_DIFFERENTIAL = 2;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -20,21 +24,29 @@ class Calculation
 
     /**
      * @ORM\Column(type="smallint")
+     * @Assert\Choice({1, 2})
+     * @Assert\NotBlank()
      */
-    private $type_payment;
+    private $type_payment = self::TYPE_PAYMENT_ANNUITY;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\GreaterThan(0)
+     * @Assert\LessThan(240)
+     * @Assert\NotBlank()
      */
     private $months;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\GreaterThan(0)
+     * @Assert\NotBlank()
      */
     private $rate;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\NotBlank()
      */
     private $first_payment_date;
 
@@ -42,6 +54,13 @@ class Calculation
      * @ORM\OneToMany(targetEntity="App\Entity\RepaymentSchedule", mappedBy="id_calculation", orphanRemoval=true)
      */
     private $repaymentSchedules;
+
+    /**
+     * @ORM\Column(type="float")
+     * @Assert\GreaterThan(0)
+     * @Assert\NotBlank()
+     */
+    private $sum;
 
     public function __construct()
     {
@@ -89,12 +108,12 @@ class Calculation
         return $this;
     }
 
-    public function getFirstPaymentDate(): ?\DateTimeInterface
+    public function getFirstPaymentDate(): \DateTimeImmutable
     {
         return $this->first_payment_date;
     }
 
-    public function setFirstPaymentDate(\DateTimeInterface $first_payment_date): self
+    public function setFirstPaymentDate(\DateTimeImmutable $first_payment_date): self
     {
         $this->first_payment_date = $first_payment_date;
 
@@ -128,6 +147,18 @@ class Calculation
                 $repaymentSchedule->setIdCalculation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSum(): ?float
+    {
+        return $this->sum;
+    }
+
+    public function setSum(float $sum): self
+    {
+        $this->sum = $sum;
 
         return $this;
     }

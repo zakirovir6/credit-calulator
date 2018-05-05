@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class CalculationController extends Controller
@@ -13,7 +12,7 @@ class CalculationController extends Controller
     public function index()
     {
         return $this->render('calculation/index.html.twig', [
-            'controller_name' => 'CalculationController',
+            'calculation_api_url' => $this->generateUrl('calculation_api'),
         ]);
     }
 }

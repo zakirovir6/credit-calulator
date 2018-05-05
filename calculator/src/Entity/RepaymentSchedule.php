@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RepaymentScheduleRepository")
  */
 class RepaymentSchedule
 {
+    public const TYPE_PAYMENT_ANNUITY = 1;
+    public const TYPE_PAYMENT_DIFFERENTIAL = 2;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -23,6 +24,11 @@ class RepaymentSchedule
     private $id_calculation;
 
     /**
+     * @ORM\Column(type="smallint")
+     */
+    private $type_payment = self::TYPE_PAYMENT_ANNUITY;
+
+    /**
      * @ORM\Column(type="integer")
      */
     private $repayment_index;
@@ -35,7 +41,7 @@ class RepaymentSchedule
     /**
      * @ORM\Column(type="float")
      */
-    private $principal_debt;
+    private $main_debt;
 
     /**
      * @ORM\Column(type="float")
@@ -55,6 +61,18 @@ class RepaymentSchedule
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getTypePayment(): ?int
+    {
+        return $this->type_payment;
+    }
+
+    public function setTypePayment(int $type_payment): self
+    {
+        $this->type_payment = $type_payment;
+
+        return $this;
     }
 
     public function getIdCalculation(): ?Calculation
@@ -93,14 +111,14 @@ class RepaymentSchedule
         return $this;
     }
 
-    public function getPrincipalDebt(): ?float
+    public function getMainDebt(): ?float
     {
-        return $this->principal_debt;
+        return $this->main_debt;
     }
 
-    public function setPrincipalDebt(float $principal_debt): self
+    public function setMainDebt(float $main_debt): self
     {
-        $this->principal_debt = $principal_debt;
+        $this->main_debt = $main_debt;
 
         return $this;
     }

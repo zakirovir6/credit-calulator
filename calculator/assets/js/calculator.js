@@ -1,10 +1,10 @@
 import Vue from 'vue';
 
-import credit from './components/credit.vue'
+import CreditForm from './components/credit-form.vue'
 
 require('../css/calculator.scss');
 
-var $ = require('jquery');
+let $ = require('jquery');
 
 require('bootstrap');
 require('popper.js');
@@ -12,6 +12,6 @@ require('popper.js');
 new Vue({
     el: '#app',
     components: {
-        credit
+        CreditForm
     }
 });
