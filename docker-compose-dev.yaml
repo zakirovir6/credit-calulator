@@ -27,7 +27,8 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
-      - REDIS_DSN=redis://redis:6379?vendor=predis
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=redis
     build:
       context: .
       dockerfile: dockerfiles/php/Dockerfile
@@ -55,7 +56,8 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
-      - REDIS_DSN=redis://redis:6379?vendor=predis
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=redis
     volumes:
       - calc-dev-sync:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini

@@ -29,3 +29,9 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    app.async.calculation_save_processor:
+      public: true
+      class: 'App\Async\CalculationSaveProcessor'
+      tags:
+        - { name: 'enqueue.client.processor' }

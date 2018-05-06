@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Calculation;
 use App\Kernel;
 use App\Utils\ScheduleCalculation;
+use Enqueue\Client\ProducerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,12 +68,20 @@ class CalculationApiController extends Controller
 
         /** @var EventDispatcher $dispatcher */
         $dispatcher = $this->get('event_dispatcher');
-        $dispatcher->addListener(KernelEvents::TERMINATE, function(PostResponseEvent $event) use ($scheduleCalculation, $calculation) {
-            $d = [];
-            foreach ($scheduleCalculation->make($calculation) as $repaymentSchedule) {
-                $d[] = $repaymentSchedule;
-            }
-        });
+        $dispatcher->addListener(KernelEvents::TERMINATE, \Closure::bind(function(PostResponseEvent $event) use ($scheduleCalculation, $calculation) {
+            /** @var ProducerInterface $producer */
+            $producer = $this->get(ProducerInterface::class);
+
+            $message = [
+                'type_payment' => $calculation->getTypePayment(),
+                'rate' => $calculation->getRate(),
+                'sum' => $calculation->getSum(),
+                'first_payment_date_timestamp' => $calculation->getFirstPaymentDate()->getTimestamp(),
+                'months' => $calculation->getMonths()
+            ];
+
+            $producer->sendEvent('calculation.save', json_encode($message));
+        }, $this));
 
         return $this->json(['error' => '', 'data' => $data]);
     }
