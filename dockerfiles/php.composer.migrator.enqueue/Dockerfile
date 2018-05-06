@@ -32,4 +32,4 @@ CMD composer install \
     && /wait-for-it.sh mysql:3306 --timeout=300 --strict -- \
      /wait-for-it.sh mysql:3306 --timeout=300 --strict -- \
       php bin/console doctrine:migrations:migrate -n \
-      && php bin/console enqueue:consume -vvv -n
+      && php bin/console enqueue:consume -n
