@@ -45,7 +45,7 @@ services:
   php-composer:
     build:
       context: .
-      dockerfile: dockerfiles/php.composer/Dockerfile
+      dockerfile: dockerfiles/php.composer.migrator.enqueue/Dockerfile
     networks:
       - calculator-net
     depends_on:
@@ -61,7 +61,6 @@ services:
     volumes:
       - calc-dev-sync:/usr/share/nginx/html:cached
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
-      - ./config/php/php-xdebug.ini:/usr/local/etc/php/conf.d/php-xdebug.ini
       - ./logs/php/:/var/log/php
     tty: true
 

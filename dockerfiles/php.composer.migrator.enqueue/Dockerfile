@@ -29,4 +29,7 @@ WORKDIR /usr/share/nginx/html
 COPY utils/wait-for-it/wait-for-it.sh /wait-for-it.sh
 
 CMD composer install \
-    && /wait-for-it.sh mysql:3306 --timeout=300 --strict -- php bin/console doctrine:migrations:migrate -n
+    && /wait-for-it.sh mysql:3306 --timeout=300 --strict -- \
+     /wait-for-it.sh mysql:3306 --timeout=300 --strict -- \
+      php bin/console doctrine:migrations:migrate -n \
+      && php bin/console enqueue:consume -vvv -n
