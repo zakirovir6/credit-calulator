@@ -1,7 +1,7 @@
 # test-task3
 
 ### Зависимости проекта
-- docker
+- docker >=17
 - docker-compose
 - свободный порт 8512
 
